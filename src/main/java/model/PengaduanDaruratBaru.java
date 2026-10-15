@@ -3,23 +3,30 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package model;
-
-/**
- *
- * @author ASUS
- */
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 /**
  * Class ini merupakan subclass dari class pengaduan sebagai superclass nya. 
  * Atribut tambahan yang digunakan untuk class ini adalah batasResponJam sebagai target waktu respon awal
  * dan kontakDarurat sebagai nomor yang bisa dihubungi petugas terkait informasi lebih lanjut terkait situasi 
 */ 
-public class PengaduanDarurat extends Pengaduan implements PenangananKhusus{
+//Anotasi ORM: baris tabel dengan tingkat_urgensi = 'DARURAT' dibaca sebagai objek PengaduanDarurat
+@Entity
+@DiscriminatorValue("DARURAT")
+public class PengaduanDaruratBaru extends Pengaduan implements PenangananKhusus{
+    @Column(name = "kontak_darurat")
     //kontak darurat dari pelapor untuk kemudian dihubungi oleh petugas
     private String kontakDarurat;
+    @Column(name = "batas_respon_jam")
     private int batasResponJam;
+
+    //Constructor kosong, dibutuhkan ORM
+    protected PengaduanDaruratBaru() {
+    }
     
     //constructor yang digunakan untuk mengisi data umum dari class pengaduan 
-    public PengaduanDarurat (String idPengaduan, String namaPelapor,String jenisPengaduan, 
+    public PengaduanDaruratBaru (String idPengaduan, String namaPelapor,String jenisPengaduan, 
             String isiPengaduan,String tanggalPengaduan, String kontakDarurat){
             super(idPengaduan, namaPelapor, jenisPengaduan, 
                     isiPengaduan, tanggalPengaduan);

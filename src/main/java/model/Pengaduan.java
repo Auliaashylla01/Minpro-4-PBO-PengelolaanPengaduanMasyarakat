@@ -3,20 +3,44 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package model;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.Table;
 /**
  * Class ini digunakan untuk menyimpan atribut umum dari pengaduan masyarakat.
  * Class ini merupakan superclass dari pengaduanBiasa dan pengaduanDarurat.
  * Penerapan abstract sebagai dasar model pengaduan
  */
+//Anotasi ORM: class ini dipetakan ke tabel "pengaduan".
+//SINGLE_TABLE: subclass (biasa dan darurat) disimpan dalam satu tabel,
+//dibedakan oleh kolom tingkat_urgensi.
+@Entity
+@Table(name = "pengaduan")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tingkat_urgensi", discriminatorType = DiscriminatorType.STRING)
 public abstract class Pengaduan {
     //Data private yang hanya bisa diakses secara langsung dari dalam class ini
+    @Id
+    @Column(name = "id_pengaduan")
     private String idPengaduan;
+    @Column(name = "nama_pelapor")
     private String namaPelapor;
+    @Column(name = "jenis_pengaduan")
     private String jenisPengaduan;
+    @Column(name = "isi_pengaduan")
     private String isiPengaduan;
+    @Column(name = "tanggal_pengaduan")
     private String tanggalPengaduan;
     private String status;
+    
+    //Constructor kosong, dibutuhkan ORM untuk membuat objek dari data tabel
+    protected Pengaduan() {
+    }
     
     //Constructor dipanggil saat objek Pengaduan baru dibuat. 
     //Digunakan untuk mengisi nilai awal dari atribut pengaduan.

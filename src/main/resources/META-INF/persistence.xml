@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/XML/XMLDocument.xml to edit this template
+-->
+<persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
+  <persistence-unit name="pengaduanPU" transaction-type="RESOURCE_LOCAL">
+    <!-- Class yang dipetakan ke tabel (entity) -->
+    <class>model.Pengaduan</class>
+    <class>model.PengaduanBiasaBaru</class>
+    <class>model.PengaduanDaruratBaru</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <!-- Sama seperti Koneksi.java: driver, URL, user, dan password -->
+      <property name="jakarta.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/db_pengaduan"/>
+      <property name="jakarta.persistence.jdbc.user" value="root"/>
+      <property name="jakarta.persistence.jdbc.password" value=""/>
+      <!-- Ubah ke true untuk melihat query SQL yang dibuat otomatis oleh ORM -->
+      <property name="hibernate.show_sql" value="false"/>
+    </properties>
+  </persistence-unit>
+</persistence>

@@ -7,28 +7,28 @@ import java.util.ArrayList;
 import java.util.Scanner;
 //import model pengaduan untuk mengelola data dari superclass dan sub class
 import model.Pengaduan;
-import model.PengaduanBiasa;
-import model.PengaduanDarurat;
+import model.PengaduanBiasaBaru;
+import model.PengaduanDaruratBaru;
 import model.PenangananKhusus;
 import view.PengaduanView;
+import dao.PengaduanDAO;
 /**
  * Class PengelolaDataPengaduan adalah sebagai Controller.
  * Class PengelolaPengaduan berfungsi untuk mengelola daftar atau data objek Pengaduan.
  * @author ASUS
  */
 public class PengelolaDataPengaduan {
-    //Kumpulan data pengaduan disimpan dalam bentuk ArrayList
-    private ArrayList<Pengaduan> daftarPengaduan;
+    //DAO digunakan untuk mengakses data pengaduan di database (menggantikan ArrayList)
+    private PengaduanDAO dao;
     private PengaduanView view;
     private Scanner scanner;
 
 
-    //Constructor untuk mengatur list pengaduan agar dapat digunakan (tidak null)
-    public PengelolaDataPengaduan(PengaduanView view) {
+        //Constructor menerima View dan DAO yang akan dipakai Controller
+    public PengelolaDataPengaduan(PengaduanView view, PengaduanDAO dao) {
         this.view = view;
+        this.dao = dao;
         this.scanner = new Scanner(System.in);
-        daftarPengaduan = new ArrayList<>();
-        muatData();
     }
     // Method untuk memulai program. Menu ditampilkan berulang
     // sampai pengguna memilih menu Keluar.
@@ -60,7 +60,7 @@ public class PengelolaDataPengaduan {
         scanner.close();
     }
     
-     // Memproses menu tambah pengaduan
+    // Memproses menu tambah pengaduan
     private void prosesTambahPengaduan() {
         view.tampilkanJudul("TAMBAH PENGADUAN");
         String id = generateId();
@@ -78,21 +78,27 @@ public class PengelolaDataPengaduan {
         view.tampilkanPilihanTingkatUrgensi();
         int urgensi = ValidasiInput.inputPilihan(scanner, "Pilihan (1/2): ", 1, 2);
 
-        if (urgensi == 1) {
+                if (urgensi == 1) {
             tambahPengaduanBiasa(id, nama, jenis, isi, tanggal);
-            view.tampilkanSukses("Pengaduan (BIASA) berhasil ditambahkan ke dalam sistem!");
         } else {
             String kontak = ValidasiInput.inputKontakDarurat(scanner, "Masukkan Kontak Darurat (contoh: 081234567890) : ");
             tambahPengaduanDarurat(id, nama, jenis, isi, tanggal, kontak);
-            view.tampilkanSukses("Pengaduan (DARURAT) berhasil ditambahkan ke dalam sistem!");
         }
+
+        // Data dibaca ulang dari database untuk memastikan pengaduan benar-benar tersimpan
+        Pengaduan pengaduanBaru = cariPengaduan(id);
+
+        if (pengaduanBaru == null) {
+            view.tampilkanError("Pengaduan gagal disimpan ke database.");
+            return;
+        }
+
+        view.tampilkanSukses("Pengaduan (" + pengaduanBaru.getTingkatUrgensi() + ") berhasil ditambahkan ke dalam sistem!");
         view.tampilkanPesan("Status awal   : Menunggu Konfirmasi Petugas");
 
         // Pengaduan yang menerapkan interface PenangananKhusus (hanya darurat)
         // langsung mengirim notifikasi. instanceof mengecek apakah objek
         // memenuhi kontrak interface tersebut.
-        Pengaduan pengaduanBaru = cariPengaduan(id);
-
         if (pengaduanBaru instanceof PenangananKhusus) {
             ((PenangananKhusus) pengaduanBaru).kirimNotifikasiDarurat();
         }
@@ -108,7 +114,7 @@ public class PengelolaDataPengaduan {
 
         if (pilihan == 1) {
             // Tampilkan seluruh data
-            view.tampilkanDaftarPengaduan(daftarPengaduan);
+        view.tampilkanDaftarPengaduan(dao.getAllPengaduan());
         } else if (pilihan == 2) {
             // Cari berdasarkan ID: hasilnya 1 objek
             String id = ValidasiInput.inputidPengaduan(scanner, "Masukkan ID Pengaduan(contoh: P001): ");
@@ -169,11 +175,13 @@ public class PengelolaDataPengaduan {
         boolean lanjut = ValidasiInput.inputKonfirmasi(scanner);
 
         if (lanjut) {
-            ubahStatus(id, statusBerikutnya);
-            view.tampilkanSukses("Status pengaduan berhasil diperbarui menjadi \"" + statusBerikutnya + "\".");
-        } else {
-            view.tampilkanInfo("Perubahan status dibatalkan.");
-        }
+            if (ubahStatus(id, statusBerikutnya)) {
+                view.tampilkanSukses("Status pengaduan berhasil diperbarui menjadi \"" + statusBerikutnya + "\".");
+            } else {
+                view.tampilkanError("Status pengaduan gagal diperbarui di database.");
+            } 
+        }else {
+            view.tampilkanInfo("Perubahan status dibatalkan."); }
     }
 
     // Memproses menu hapus pengaduan
@@ -191,46 +199,20 @@ public class PengelolaDataPengaduan {
         boolean konfirmasi = ValidasiInput.inputKonfirmasi(scanner);
 
         if (konfirmasi) {
-            hapusPengaduan(id);
-            view.tampilkanSukses("Data pengaduan berhasil dihapus dari sistem.");
-        } else {
-            view.tampilkanInfo("Proses penghapusan data pengaduan dibatalkan.");
-        }
-    }
-    
-    //Metode privat untuk menambahkan data dummy ke dalam daftar.
-    private void muatData(){
-        Pengaduan p1 = new PengaduanBiasa(
-                generateId(),
-                "Budi Santoso",
-                "Jalan",
-                "Jalan berlubang cukup dalam di depan gang, mengganggu pengendara motor.",
-                "20/09/2026"
-        );
-        daftarPengaduan.add(p1);
-        Pengaduan p2 = new PengaduanDarurat (
-                generateId(),
-                "Siti Aminah",
-                "Keamanan",
-                "Terjadi percikan api di panel listrik dekat pasar, berisiko kebakaran.",
-                "21/09/2026",
-                "081234567890"
-        );
-        daftarPengaduan.add(p2);
-    }
-    
-   //Mengecek apakah suatu ID Pengaduan sudah ada di dalam list.
-    public boolean idSudahAda(String idPengaduan) {
-
-        for (Pengaduan pengaduan : daftarPengaduan) {
-
-            if (pengaduan.getIdPengaduan().equalsIgnoreCase(idPengaduan)) {
-                return true; //ID ditemukan
+            if (hapusPengaduan(id)) {
+                view.tampilkanSukses("Data pengaduan berhasil dihapus dari sistem.");
+            } else {
+                view.tampilkanError("Data pengaduan gagal dihapus dari database.");
             }
-        }
-
-        return false; // ID belum pernah dipakai
+        }else {
+            view.tampilkanInfo("Proses penghapusan data pengaduan dibatalkan."); }
     }
+    
+   //Mengecek apakah suatu ID Pengaduan sudah ada di database.
+    public boolean idSudahAda(String idPengaduan) {
+        return dao.cariPengaduanById(idPengaduan) != null; // true jika ID sudah dipakai
+    }
+    
     //Membuat ID Pengaduan otomatis dengan format P001, P002, dan seterusnya.
     public String generateId() {
 
@@ -248,61 +230,34 @@ public class PengelolaDataPengaduan {
     //Menambahkan data Pengaduan biasa baru ke dalam ArrayList.
     public void tambahPengaduanBiasa(String id, String nama, String jenis,
                 String isi, String tanggal) {
-        Pengaduan p = new PengaduanBiasa(id, nama, jenis, isi, tanggal);
-        daftarPengaduan.add(p);
+        Pengaduan p = new PengaduanBiasaBaru(id, nama, jenis, isi, tanggal);
+        dao.tambahPengaduan(p);
     }
     //Menambahkan data Pengaduan darurat baru ke dalam ArrayList.
     public void tambahPengaduanDarurat(String id, String nama, String jenis, String isi,
                 String tanggal, String kontakDarurat) {
-        Pengaduan p = new PengaduanDarurat(id, nama, jenis, isi, tanggal, kontakDarurat);
-        daftarPengaduan.add(p);
+        Pengaduan p = new PengaduanDaruratBaru(id, nama, jenis, isi, tanggal, kontakDarurat);
+        dao.tambahPengaduan(p);
     }
     
     // Overloading 1: cari berdasarkan ID, hasilnya 1 objek Pengaduan
     public Pengaduan cariPengaduan(String idPengaduan) {
-        for (Pengaduan pengaduan : daftarPengaduan) {
-            if (pengaduan.getIdPengaduan().equalsIgnoreCase(idPengaduan)) {
-                return pengaduan;
-            }
-        }
-        // Pengaduan tidak ditemukan
-        return null;
+        // Hasilnya null jika pengaduan tidak ditemukan
+        return dao.cariPengaduanById(idPengaduan);
     }
 
     // Overloading 2: cari berdasarkan jenis dan status sekaligus,
     // hasilnya berupa ArrayList karena bisa lebih dari satu data
     public ArrayList<Pengaduan> cariPengaduan(String jenisPengaduan, String status) {
-        ArrayList<Pengaduan> hasilFilter = new ArrayList<>();
-
-        for (Pengaduan pengaduan : daftarPengaduan) {
-            if (pengaduan.getJenisPengaduan().equalsIgnoreCase(jenisPengaduan)
-                    && pengaduan.getStatus().equalsIgnoreCase(status)) {
-                hasilFilter.add(pengaduan);
-            }
-        }
-        return hasilFilter;
+        return dao.cariPengaduanByJenisDanStatus(jenisPengaduan, status);
     }
-    
+
     public ArrayList<Pengaduan> cariPengaduanByStatus(String status) {
-        ArrayList<Pengaduan> hasilFilter = new ArrayList<>();
-
-        for (Pengaduan pengaduan : daftarPengaduan) {
-            if (pengaduan.getStatus().equalsIgnoreCase(status)) {
-                hasilFilter.add(pengaduan);
-            }
-        }
-        return hasilFilter;
+        return dao.cariPengaduanByStatus(status);
     }
-    
-    public ArrayList<Pengaduan> cariPengaduanByJenis(String jenisPengaduan) {
-        ArrayList<Pengaduan> hasilFilter = new ArrayList<>();
 
-        for (Pengaduan pengaduan : daftarPengaduan) {
-            if (pengaduan.getJenisPengaduan().equalsIgnoreCase(jenisPengaduan)) {
-                hasilFilter.add(pengaduan);
-            }
-        }
-        return hasilFilter;
+    public ArrayList<Pengaduan> cariPengaduanByJenis(String jenisPengaduan) {
+        return dao.cariPengaduanByJenis(jenisPengaduan);
     }
     
     public String statusBerikutnya(String statusSaatIni) {
@@ -319,23 +274,11 @@ public class PengelolaDataPengaduan {
     }
     // Memperbarui status pengaduan berdasarkan ID
     public boolean ubahStatus(String idPengaduan, String statusBaru) {
-        Pengaduan pengaduan = cariPengaduan(idPengaduan);
-
-        if (pengaduan != null) {
-            pengaduan.setStatus(statusBaru);
-            return true;
-        }
-        return false;
+        return dao.ubahStatusPengaduan(idPengaduan, statusBaru);
     }
 
-    // Menghapus pengaduan dari list berdasarkan ID
+    // Menghapus pengaduan dari database berdasarkan ID
     public boolean hapusPengaduan(String idPengaduan) {
-        Pengaduan pengaduan = cariPengaduan(idPengaduan);
-
-        if (pengaduan != null) {
-            daftarPengaduan.remove(pengaduan);
-            return true;
-        }
-        return false;
+        return dao.hapusPengaduan(idPengaduan);
     }
 }
