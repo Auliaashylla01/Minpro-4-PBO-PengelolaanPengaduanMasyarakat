@@ -110,47 +110,47 @@ Menu tersebut digunakan sebagai pusat navigasi program. Setelah pengguna menyele
 Secara umum, sistem dimulai dengan menyediakan data awal pada `ArrayList`, kemudian pengguna dapat memilih fitur yang tersedia melalui menu utama. Alur sistem tersebut menunjukkan bahwa setiap fitur bekerja melalui menu utama dan setelah proses selesai pengguna kembali ke menu. Program akan berhenti ketika pilihan menu bernilai `5`.
 
 ```text
-                          ┌──────────────┐
-                          │    MULAI     │
-                          └──────┬───────┘
-                                 │
-                                 ▼
-                     Inisialisasi Controller
-                                 │
-                                 ▼
-                      Muat Dummy Data Awal
-                                 │
-           ┌─────────────────────┴─────────────────────┐
-           │                                           │
-           ▼                                           │
-┌────────────────────┐                                 │
-│   Tampilkan Menu   │◄────────────────────────────┐   │
-└─────────┬──────────┘                             │   │
-          │                                        │   │
-          ▼                                        │   │
-┌────────────────────┐                             │   │
-│   Input Pilihan    │                             │   │
-│        Menu        │                             │   │
-└─────────┬──────────┘                             │   │
-          │                                        │   │
-          ▼                                        │   │
-  ┌───────────────┐                                │   │
-  │ Pilihan Menu? │                                │   │
-  └───────┬───────┘                                │   │
-          │                                        │   │
-  ┌───────┼─────────────┬──────────────┬───────────┤   │
-  │       │             │              │           │   │
-  ▼       ▼             ▼              ▼           ▼   │
- [1]     [2]           [3]            [4]         [5]  │
-Tambah  Lihat          Ubah          Hapus       Keluar│
-  │       │             │              │           │   │
-  ▼       ▼             ▼              ▼           ▼   │
-Proses  Proses        Proses        Proses      Selesai│
-  │       │             │              │               │
-  └───────┴──────┬──────┴──────────────┘               │
-                 │                                     │
-                 ▼                                     │
-          Kembali ke Menu ─────────────────────────────┘
+                        ┌──────────────┐
+                        │    MULAI     │
+                        └──────┬───────┘
+                               │
+                               ▼
+                    Periksa koneksi ke 
+                      database MySQL
+                               │
+                               ▼
+                       Koneksi berhasil?
+                               │
+             ┌─────────────────┴─────────────────┐
+             │ (Tidak)                           │ (Ya)
+             ▼                                   ▼
+    Tampilkan pesan gagal                 Buat View, DAO, 
+                                           dan Controller
+             │                                   │
+             ▼                                   ▼
+          Selesai                     Tampilkan menu utama
+                                                 │
+                                                 ▼
+                                        Input Pilihan Menu
+                                                 │
+                                                 ▼
+                                          [ Pilihan Menu? ]
+                                                 │
+             ┌───────────────┬───────────┬───────┴─────┬──────────────┐
+             │               │           │             │              │
+             ▼               ▼           ▼             ▼              ▼
+            [1]             [2]         [3]           [4]            [5]
+          Tambah           Lihat        Ubah         Hapus         Keluar
+         pengaduan       pengaduan     status      pengaduan
+             │               │           │             │              │
+             ▼               ▼           ▼             ▼              ▼
+          Simpan          Baca via     Perbarui       Hapus        Selesai
+         via ORM         JDBC / ORM    via ORM       via ORM
+             │               │           │             │              
+             └───────────────┴─────┬─────┴─────────────┘              
+                                   │                                  
+                                   ▼                                  
+                       Kembali ke menu utama
 ```
 
 ---
