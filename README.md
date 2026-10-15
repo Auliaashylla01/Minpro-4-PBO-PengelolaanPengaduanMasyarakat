@@ -588,29 +588,33 @@ Controller (`PengelolaDataPengaduan`) tidak lagi memakai `ArrayList`, tetapi mem
 
 <img width="576" height="279" alt="image" src="https://github.com/user-attachments/assets/65f38285-f12a-4da5-81c9-a49b6cdb87fc" />
 
-*Gambar 25: Interface `PengaduanDAO` sebagai kontrak akses data pengaduan.*
+*Gambar 24: Interface `PengaduanDAO` sebagai kontrak akses data pengaduan.*
 
 <img width="722" height="415" alt="image" src="https://github.com/user-attachments/assets/4c73fc81-9290-4539-ab86-7dc064769895" />
 
 <img width="497" height="258" alt="image" src="https://github.com/user-attachments/assets/737260ca-eed7-4b68-a4f1-9d2e66c36eb4" />
 
-*Gambar 26: Penerapan `PreparedStatement` untuk menyimpan dan membaca data pengaduan.*
+*Gambar 25 & 26: Penerapan `PreparedStatement` untuk menyimpan dan membaca data pengaduan.*
 
-> **[TEMPEL SCREENSHOT BARU]** `PengaduanJdbcDAO.java`: method `ubahStatusPengaduan` (`UPDATE`) dan `hapusPengaduan` (`DELETE`).
+<img width="523" height="234" alt="image" src="https://github.com/user-attachments/assets/90a1a253-8fc6-4410-9850-6980aea9cafd" />            
 
-*Gambar 27: Penerapan `PreparedStatement` untuk mengubah dan menghapus data pengaduan.*
+<img width="464" height="221" alt="image" src="https://github.com/user-attachments/assets/4dbc3577-a992-4fdc-b363-dcfbdbb5ba8f" />            
 
-> **[TEMPEL SCREENSHOT BARU]** `PengelolaDataPengaduan.java`: atribut `dao`, constructor, dan contoh method yang memanggil `dao`.
+*Gambar 27 & 28: Penerapan `PreparedStatement` untuk mengubah dan menghapus data pengaduan.*
 
-*Gambar 28: Controller memakai DAO untuk mengakses database.*
+<img width="541" height="381" alt="image" src="https://github.com/user-attachments/assets/823b7f13-6e2d-41f3-8d4e-eb4cefd58bcf" />
 
-> **[TEMPEL SCREENSHOT BARU]** `PengelolaanPengaduanMasyarakt.java` (cek koneksi dan pembuatan DAO).
+*Gambar 29: Controller memakai DAO untuk mengakses database.*
 
-*Gambar 29: Main memeriksa koneksi database lalu menghubungkan DAO ke Controller.*
+<img width="724" height="374" alt="image" src="https://github.com/user-attachments/assets/b4bf4202-cfc0-404d-8bd7-97f2ece47a09" />
 
-> **[TEMPEL SCREENSHOT BARU]** Setelah menambah (atau mengubah/menghapus) pengaduan di program, tampilkan tabel `pengaduan` di phpMyAdmin (tab Browse) yang memperlihatkan perubahan tersebut.
+*Gambar 30: Main memeriksa koneksi database lalu menghubungkan DAO ke Controller.*
 
-*Gambar 30: Bukti data pengaduan tersimpan dan berubah di database.*
+<img width="346" height="348" alt="image" src="https://github.com/user-attachments/assets/5aec070f-af2b-4aba-95e9-4730ec65e633" />
+
+<img width="886" height="92" alt="image" src="https://github.com/user-attachments/assets/3a5c35e5-be51-467e-9f4c-1ba0d798d8f0" />
+
+*Gambar 31 & 32: Tambah Pengaduan dan Bukti data pengaduan tersimpan di database.*
 
 ---
 
@@ -629,69 +633,43 @@ Nilai tambah yang diterapkan adalah **ORM (Object-Relational Mapping)** mengguna
 | `dao/PengaduanOrmDAO` | DAO yang memakai ORM untuk simpan, cari ID, ubah, dan hapus. |
 | `config/TestORM` | Menguji konfigurasi dan mapping ORM. |
 
-> **[TEMPEL SCREENSHOT BARU]** File `persistence.xml`.
+<img width="788" height="379" alt="image" src="https://github.com/user-attachments/assets/e8d13619-1b16-4944-9824-f376aaa58273" />
 
-*Gambar 31: Konfigurasi ORM pada `persistence.xml`.*
+*Gambar 33: Konfigurasi ORM pada `persistence.xml`.*
 
 ### 7.2 Mapping class ke tabel
 
 Class `Pengaduan` diberi anotasi agar dipetakan ke tabel `pengaduan`. Class `PengaduanBiasa` dan `PengaduanDarurat` disimpan dalam tabel yang sama, dibedakan oleh kolom `tingkat_urgensi`.
-
-```java
-@Entity
-@Table(name = "pengaduan")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "tingkat_urgensi", discriminatorType = DiscriminatorType.STRING)
-public abstract class Pengaduan {
-
-    @Id
-    @Column(name = "id_pengaduan")
-    private String idPengaduan;
-    ...
-}
-```
-
 Subclass diberi `@Entity` dan `@DiscriminatorValue("BIASA")` atau `@DiscriminatorValue("DARURAT")`, sedangkan atribut khususnya diberi `@Column`. Setiap entity juga memiliki constructor kosong yang dibutuhkan ORM.
 
-> **[TEMPEL SCREENSHOT BARU]** `Pengaduan.java`: anotasi di atas class dan pada atribut.
+<img width="568" height="335" alt="image" src="https://github.com/user-attachments/assets/24eb8301-0ff9-4e53-a01d-991c3548ae1e" />
 
-*Gambar 32: Anotasi ORM pada superclass `Pengaduan`.*
+*Gambar 34: Anotasi ORM pada superclass `Pengaduan`.*
 
-> **[TEMPEL SCREENSHOT BARU]** `PengaduanBiasa.java` dan `PengaduanDarurat.java`: `@Entity`, `@DiscriminatorValue`, dan `@Column`.
+<img width="590" height="137" alt="image" src="https://github.com/user-attachments/assets/1e7c248b-7db3-4d1a-beca-2fa01efeace5" />        
 
-*Gambar 33: Anotasi ORM pada subclass `PengaduanBiasa` dan `PengaduanDarurat`.*
+<img width="599" height="175" alt="image" src="https://github.com/user-attachments/assets/7c3c419e-2dda-4bde-8800-27b7dafbe6df" />        
+
+*Gambar 35 & 36: Anotasi ORM pada subclass `PengaduanBiasa` dan `PengaduanDarurat`.*
 
 ### 7.3 DAO dengan ORM
 
-`PengaduanOrmDAO` mewarisi `PengaduanJdbcDAO`, jadi JDBC tetap menjadi dasar. Class ini hanya mengganti empat operasi dengan ORM melalui `EntityManager`, yaitu simpan, cari berdasarkan ID, ubah status, dan hapus. Lihat semua dan pencarian/filter tetap memakai SQL dari `PengaduanJdbcDAO`.
+`PengaduanOrmDAO` mewarisi `PengaduanJdbcDAO`, jadi JDBC tetap menjadi dasar. Class ini hanya mengganti empat operasi dengan ORM melalui `EntityManager`, yaitu simpan, cari berdasarkan ID, ubah status, dan hapus. Lihat semua dan pencarian/filter tetap memakai SQL dari `PengaduanJdbcDAO`. Operasi yang mengubah data dibungkus transaksi (`begin` dan `commit`, dengan `rollback` jika terjadi error). DAO yang dipakai dipilih pada `Main`, sedangkan Controller dan View tidak berubah:
 
-```java
-em.persist(pengaduan);                                         // simpan, INSERT dibuat otomatis
-pengaduan = em.find(Pengaduan.class, idPengaduan);             // cari berdasarkan ID
-pengaduan.setStatus(statusBaru);                               // ubah, UPDATE dibuat otomatis saat commit
-em.remove(pengaduan);                                          // hapus
-```
+<img width="504" height="246" alt="image" src="https://github.com/user-attachments/assets/15850da8-5c98-4ba1-867c-29444653c810" />
 
-Operasi yang mengubah data dibungkus transaksi (`begin` dan `commit`, dengan `rollback` jika terjadi error). DAO yang dipakai dipilih pada `Main`, sedangkan Controller dan View tidak berubah:
+*Gambar 37: Penerapan ORM untuk membuat data pengaduan tanpa query SQL.*
 
-```java
-PengaduanDAO dao = new PengaduanOrmDAO();   // atau new PengaduanJdbcDAO() untuk JDBC saja
-```
+<img width="616" height="53" alt="image" src="https://github.com/user-attachments/assets/f5fcd9c2-5e32-435d-a91e-fdc38768a6a9" />
 
-> **[TEMPEL SCREENSHOT BARU]** `PengaduanOrmDAO.java`: method `tambahPengaduan` (`persist`), `cariPengaduanById` (`find`), `ubahStatusPengaduan`, dan `hapusPengaduan` (`remove`).
-
-*Gambar 34: Penerapan ORM untuk menyimpan, mencari, mengubah, dan menghapus data tanpa query SQL.*
-
-> **[TEMPEL SCREENSHOT BARU]** `PengelolaanPengaduanMasyarakt.java` pada baris `PengaduanDAO dao = new PengaduanOrmDAO();`.
-
-*Gambar 35: Main memilih `PengaduanOrmDAO` sebagai DAO yang dipakai.*
+*Gambar 38: Main memilih `PengaduanOrmDAO` sebagai DAO yang dipakai.*
 
 ### 7.4 Bukti penerapan ORM
 
-> **[TEMPEL SCREENSHOT BARU]** Output console `TestORM`: `STATUS: BERHASIL! ORM terhubung, ...`
+<img width="615" height="340" alt="image" src="https://github.com/user-attachments/assets/6a0a1271-b42f-42bd-8641-e1362ffa5d7a" />
 
-*Gambar 36: Hasil pengujian konfigurasi ORM dengan `TestORM`.*
+*Gambar 39: Hasil pengujian konfigurasi ORM dengan `TestORM`.*
 
-> **[TEMPEL SCREENSHOT BARU]** phpMyAdmin tab **Browse**: tabel `pengaduan` memperlihatkan baris `BIASA` dan `DARURAT` dalam satu tabel pada kolom `tingkat_urgensi`.
+<img width="719" height="194" alt="image" src="https://github.com/user-attachments/assets/bcfd3016-21a9-4791-9a6f-81cc27139d52" />
 
-*Gambar 37: Pewarisan `PengaduanBiasa` dan `PengaduanDarurat` disimpan dalam satu tabel dengan kolom pembeda `tingkat_urgensi`.*
+*Gambar 40: Pewarisan `PengaduanBiasa` dan `PengaduanDarurat` disimpan dalam satu tabel dengan kolom pembeda `tingkat_urgensi`.*
