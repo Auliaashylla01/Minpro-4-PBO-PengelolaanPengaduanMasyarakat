@@ -197,7 +197,7 @@ Pilih Menu Tambah Pengaduan
                   └──────┬──────┘
                          │
                          ▼
-                Simpan ke ArrayList
+                Simpan ke Database
                          │
                          ▼
                 Tampilkan Berhasil
@@ -233,7 +233,7 @@ Pada pengaduan darurat, pengguna juga diminta memasukkan kontak darurat. Setelah
 
 <img width="334" height="298" alt="image" src="https://github.com/user-attachments/assets/dfbd73e3-e3bb-42e5-a5b6-16b4828c6dbb" />
 
-*Gambar 2: Proses penambahan pengaduan biasa, mulai dari ID otomatis, pengisian data pengaduan, pemilihan jenis dan urgensi, hingga data berhasil disimpan.*
+*Gambar 2: Proses penambahan pengaduan biasa, mulai dari ID otomatis, pengisian data pengaduan, pemilihan jenis dan urgensi, hingga data berhasil disimpan pada database.*
 
 ### Bukti output proses tambah pengaduan darurat
 
@@ -246,7 +246,7 @@ Pada pengaduan darurat, pengguna juga diminta memasukkan kontak darurat. Setelah
 
 ## 5.3 Alur Lihat Pengaduan
 
-Fitur **Lihat Pengaduan** digunakan untuk menampilkan atau mencari data pengaduan yang tersimpan pada `ArrayList`.
+Fitur **Lihat Pengaduan** digunakan untuk menampilkan atau mencari data pengaduan yang tersimpan pada Database.
 
 <img width="267" height="135" alt="image" src="https://github.com/user-attachments/assets/d28321b4-959c-4002-b9d6-8d52f9a59487" />            
 
@@ -256,9 +256,9 @@ Pada versi program ini, pengguna dapat memilih **lima cara** untuk melihat data 
 
 <img width="464" height="283" alt="image" src="https://github.com/user-attachments/assets/05dbb5a0-5465-4e98-bd92-143d5d8dfaa0" />
 
-*Gambar 5: Tampilan data pengaduan pada fitur Lihat Pengaduan, termasuk data dummy yang telah tersedia sejak program dijalankan.*
+*Gambar 5: Tampilan data pengaduan pada fitur Lihat Pengaduan, dengan data pengaduan yang disimpan dalam database*
 
-Data dummy telah dimasukkan sejak `PengelolaDataPengaduan` dibuat. Oleh karena itu, ketika program pertama kali menjalankan menu Lihat Pengaduan, data sudah langsung tersedia tanpa harus melakukan proses tambah terlebih dahulu.
+Data Pengaduan telah disimpam di database. Oleh karena itu, ketika program pertama kali menjalankan menu Lihat Pengaduan, data sudah langsung tersedia tanpa harus melakukan proses tambah terlebih dahulu.
 
 ```text
 Pilih Menu Lihat Pengaduan
@@ -282,7 +282,7 @@ Pengguna memilih metode pencarian
                   Kembali ke Menu
 ```
 
-Untuk pencarian berdasarkan ID, sistem menghasilkan satu object `Pengaduan` apabila data ditemukan. Sedangkan pencarian berdasarkan status, jenis, atau jenis dan status dapat menghasilkan lebih dari satu data sehingga hasilnya disimpan dalam `ArrayList<Pengaduan>`.
+Untuk pencarian berdasarkan ID, sistem menghasilkan satu object `Pengaduan` apabila data ditemukan. Sedangkan pencarian berdasarkan status, jenis, atau jenis dan status dapat menghasilkan lebih dari satu data sehingga hasilnya disimpan dalam Database Pengaduan.
 
 Pencarian berdasarkan jenis dan status menggunakan method `cariPengaduan()` dengan parameter yang berbeda dari pencarian berdasarkan ID. Penerapan tersebut menjadi salah satu bentuk **method overloading** pada program.
 
@@ -535,37 +535,5 @@ Dengan abstraction, class `Pengaduan` hanya menentukan bahwa setiap jenis pengad
 ---
 
 
-## 8. Penerapan Nilai Tambah dengan Interface `PenangananKhusus`
+## 8. Penjelasan Penerapan JDBC
 
-Nilai tambah lainnya adalah penggunaan **interface `PenangananKhusus`** untuk memberikan kontrak khusus pada pengaduan yang membutuhkan penanganan darurat.
-
-Interface terdapat pada:
-
-<img width="401" height="118" alt="image" src="https://github.com/user-attachments/assets/0f3027cf-2008-4cd6-badd-fb4e12c240a2" />
-
-*Gambar 20: Penerapan Interface pada class `PenangananKhusus` dengan dua method `getTargetWaktuResponJam` dan `kirimNotifikasiDarurat`.*
-
-Interface tersebut kemudian diimplementasikan oleh class `PengaduanDarurat`:
-
-<img width="479" height="26" alt="image" src="https://github.com/user-attachments/assets/19086ad7-8707-4421-b180-683e276dceaa" />                
-
-*Gambar 21: Penerapan Interface pada class `PenangananKhusus` dengan dua method `getTargetWaktuResponJam` dan `kirimNotifikasiDarurat`.*                
-
-`PengaduanDarurat` wajib mengimplementasikan method yang terdapat pada interface, yaitu:            
-
-<img width="564" height="172" alt="image" src="https://github.com/user-attachments/assets/dd293fcf-4e66-4d12-8a71-04b30234c169" />
-
-*Gambar 22: Penerapan Interface pada class `PengaduanDarurat` dengan dua method `getTargetWaktuResponJam` dan `kirimNotifikasiDarurat`.*                
-
-Interface digunakan karena tidak semua pengaduan membutuhkan penanganan khusus. Pada sistem ini, `PengaduanDarurat` memiliki kebutuhan tambahan berupa kontak darurat, target respons awal, dan notifikasi urgent.
-
-Saat pengaduan darurat berhasil dibuat, sistem memeriksa apakah object tersebut menerapkan interface `PenangananKhusus` menggunakan `instanceof`.
-
-<img width="431" height="117" alt="image" src="https://github.com/user-attachments/assets/edfc465e-ee5e-4753-ad5c-c1f3995ebcd0" />                    
-
-*Gambar 23: Penerapan Interface pada class `PengelolaDataPengaduan` di dalam method prosesTambahPengaduan().*        
-
-Dengan penerapan tersebut, sistem dapat memberikan perlakuan khusus kepada pengaduan darurat tanpa membuat seluruh jenis pengaduan memiliki fitur notifikasi darurat.
-
----
-Oleh Aulia Ashylla Ananda Putri Hariawan (2509116076)
